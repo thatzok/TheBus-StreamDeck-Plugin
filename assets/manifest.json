@@ -1,0 +1,57 @@
+{
+  "SDKVersion": "2",
+  "Author": "ThatZOK",
+  "CodePath": "",
+  "CodePathWin": "thebus-streamdeck-plugin.exe",
+  "Description": "The Bus Telemetry Plugin",
+  "Icon": "Category",
+  "Name": "The Bus",
+  "Version": "1.0",
+  "Category": "The Bus",
+  "CategoryIcon": "Category",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Software": {
+    "MinimumVersion": "6.6"
+  },
+  "Actions": [
+    {
+      "Icon": "actions/assets/inbus_menu",
+      "Name": "Sitting in the Drivers Seat",
+      "States": [
+        {
+          "Image": "actions/assets/inbus_false"
+        },
+        {
+          "Image": "actions/assets/inbus_true"
+        }
+      ],
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Tooltip": "Shows if player is sitting in the drivers seat",
+      "UUID": "de.thatzok.thebus.inbus",
+      "Controllers": ["Keypad"]
+    },
+    {
+      "Icon": "actions/assets/fixing_brake_off",
+      "Name": "Fixing Brake",
+      "States": [
+        {
+          "Image": "actions/assets/fixing_brake_off"
+        },
+        {
+          "Image": "actions/assets/fixing_brake_on"
+        }
+      ],
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Tooltip": "Controls the FixingBrake",
+      "UUID": "de.thatzok.thebus.fixingbrake",
+      "Controllers": ["Keypad"]
+    }
+  ]
+}
