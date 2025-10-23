@@ -38,7 +38,7 @@
     },
     {
       "Icon": "actions/assets/fixing_brake_off",
-      "Name": "Fixing Brake",
+      "Name": "Parking brake",
       "States": [
         {
           "Image": "actions/assets/fixing_brake_off"
@@ -49,9 +49,24 @@
       ],
       "SupportedInMultiActions": false,
       "DisableAutomaticStates": true,
-      "Tooltip": "Controls the FixingBrake",
+      "Tooltip": "Controls the Parking brake",
       "UUID": "de.thatzok.thebus.fixingbrake",
       "Controllers": ["Keypad"]
+    },
+    {
+      "Icon": "actions/assets/gear_N_off",
+      "Name": "Gear Selector",
+      "States": [
+        {
+          "Image": "actions/assets/gear_N_off"
+        }
+      ],
+      "Tooltip": "Controls the Gear Selector.",
+      "UUID": "de.thatzok.thebus.gearselect",
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Controllers": ["Keypad"],
+      "PropertyInspectorPath": "actions/property-inspector/gearselectinspector.html"
     }
   ]
 }

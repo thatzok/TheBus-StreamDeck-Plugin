@@ -4,7 +4,6 @@ use std::fs::OpenOptions;
 
 use std::io::Write;
 use std::time::Duration;
-use sysinfo::System;
 
 use rusty_patio::{
     streamdeck::{
@@ -20,13 +19,16 @@ use the_bus_telemetry::vehicle::{init_vehicle_state, print_vehicle_state};
 use the_bus_telemetry::vehicle_diff::compare_vehicle_states;
 
 use crate::action_fixing_brake::handle_event_fixing_brake;
+use crate::action_fixing_gearselect::handle_event_fixing_gearselect;
 use crate::action_inbus::handle_event_inbus;
 
 mod action_fixing_brake;
+mod action_fixing_gearselect;
 mod action_inbus;
 
 const UUID_FIXING_BRAKE: &str = "de.thatzok.thebus.fixingbrake";
 const UUID_INBUS: &str = "de.thatzok.thebus.inbus";
+const UUID_GEARSELECT: &str = "de.thatzok.thebus.gearselect";
 
 struct ActionInstance {
     title: String,
@@ -105,6 +107,25 @@ fn write_all_buttons_to_log<W: Write>(writer: &mut W, buttons: &HashMap<String, 
     let _ = writeln!(writer, "-- End buttons snapshot --");
 }
 
+fn logger(msg: &str) {
+    let mut log_file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open("streamdeck.log")
+        .expect("Failed to open or create streamdeck.log");
+
+    writeln!(log_file, "{}", msg);
+}
+fn get_value_or_empty(map: &HashMap<String, serde_json::Value>, key: &str) -> String {
+    let bla = map.get(key).map(|s| s.clone());
+    if bla.is_none() {
+        return "".to_string();
+    }
+    let fasel: serde_json::Value = bla.unwrap();
+    let ret = fasel.as_str().unwrap_or("");
+    ret.to_string()
+}
+
 async fn set_value_for_uuid(
     buttons: &mut HashMap<String, ActionInstance>,
     uuid: &str,
@@ -170,6 +191,51 @@ async fn set_title_for_uuid(
         }
     }
 }
+async fn set_gearselect_for_uuid(
+    buttons: &mut HashMap<String, ActionInstance>,
+    uuid: &str,
+    state: u8,
+    client: &mut StreamDeckClient,
+) {
+    for (context, btn) in buttons.iter_mut() {
+        if btn.uuid == uuid {
+            
+            if btn.state != state {
+                btn.state = state;
+                let mut gear = get_value_or_empty(&btn.settings, "GearSelection");
+                if gear.is_empty() {
+                    gear = "2".to_string();
+                }
+
+                let mut active = "off";
+                if btn.state.to_string() == gear {
+                    active = "on";
+                } else {
+                    active = "off";
+                }
+
+                let g = match gear.as_str() {
+                    "1" => "D",
+                    "2" => "N",
+                    "3" => "R",
+                    _ => "N",
+                };
+
+                let image = format!("actions/assets/gear_{}_{}.png", g, active);
+
+                let _ = client
+                    .transmitter
+                    .set_image(
+                        context.clone(),
+                        image,
+                        StreamDeckTarget::HARDWARE_AND_SOFTWARE,
+                        None,
+                    )
+                    .await;
+            }
+        }
+    }
+}
 
 #[tokio::main(worker_threads = 1)]
 async fn main() {
@@ -186,7 +252,7 @@ async fn main() {
     let mut vehicle_name = "".to_string();
 
     let mut config = RequestConfig::new();
-    // config.debugging=true;
+    // config.debugging = true;
 
     let mut vehicle_state = init_vehicle_state();
 
@@ -227,6 +293,7 @@ async fn main() {
                                                             // we only care about events that have an action entry (are about a button/instance )
                                                             if action == UUID_INBUS { handle_event_inbus(event,&config, &mut buttons, &mut client).await; }
                                                             else if action == UUID_FIXING_BRAKE { handle_event_fixing_brake(event,&config, &mut buttons, &mut client).await; }
+                                                            else if action == UUID_GEARSELECT { handle_event_fixing_gearselect(event,&config, &mut buttons, &mut client).await; }
 
                                                         }
                                                         None => break,
@@ -280,7 +347,7 @@ async fn main() {
                                                     set_state_for_uuid(&mut buttons, UUID_INBUS, 1, &mut client).await;
                                                     set_state_for_uuid(&mut buttons, UUID_FIXING_BRAKE, vehicle_state.fixing_brake, &mut client).await;
 
-
+                                                    set_gearselect_for_uuid(&mut buttons, UUID_GEARSELECT, vehicle_state.gear_selector, &mut client).await;
                                                     }
                                         }
 
