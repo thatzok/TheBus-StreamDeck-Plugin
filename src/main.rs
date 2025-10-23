@@ -20,15 +20,18 @@ use the_bus_telemetry::vehicle_diff::compare_vehicle_states;
 
 use crate::action_fixing_brake::handle_event_fixing_brake;
 use crate::action_fixing_gearselect::handle_event_fixing_gearselect;
+use crate::action_ignition::handle_event_ignition;
 use crate::action_inbus::handle_event_inbus;
 
 mod action_fixing_brake;
 mod action_fixing_gearselect;
+mod action_ignition;
 mod action_inbus;
 
 const UUID_FIXING_BRAKE: &str = "de.thatzok.thebus.fixingbrake";
 const UUID_INBUS: &str = "de.thatzok.thebus.inbus";
 const UUID_GEARSELECT: &str = "de.thatzok.thebus.gearselect";
+const UUID_IGNITION: &str = "de.thatzok.thebus.ignition";
 
 struct ActionInstance {
     title: String,
@@ -199,7 +202,6 @@ async fn set_gearselect_for_uuid(
 ) {
     for (context, btn) in buttons.iter_mut() {
         if btn.uuid == uuid {
-            
             if btn.state != state {
                 btn.state = state;
                 let mut gear = get_value_or_empty(&btn.settings, "GearSelection");
@@ -294,6 +296,7 @@ async fn main() {
                                                             if action == UUID_INBUS { handle_event_inbus(event,&config, &mut buttons, &mut client).await; }
                                                             else if action == UUID_FIXING_BRAKE { handle_event_fixing_brake(event,&config, &mut buttons, &mut client).await; }
                                                             else if action == UUID_GEARSELECT { handle_event_fixing_gearselect(event,&config, &mut buttons, &mut client).await; }
+                                                            else if action == UUID_IGNITION { handle_event_ignition(event,&config, &mut buttons, &mut client).await; }
 
                                                         }
                                                         None => break,

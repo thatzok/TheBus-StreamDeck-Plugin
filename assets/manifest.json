@@ -67,6 +67,20 @@
       "DisableAutomaticStates": true,
       "Controllers": ["Keypad"],
       "PropertyInspectorPath": "actions/property-inspector/gearselectinspector.html"
+    },
+    {
+      "Icon": "actions/assets/ignition",
+      "Name": "Ignition Control",
+      "States": [
+        {
+          "Image": "actions/assets/ignition"
+        }
+      ],
+      "Tooltip": "Controls the Ignition.",
+      "UUID": "de.thatzok.thebus.ignition",
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Controllers": ["Keypad"]
     }
   ]
 }
