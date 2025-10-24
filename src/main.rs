@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::fmt::format;
 use std::fs::OpenOptions;
 
 use std::io::Write;
@@ -13,7 +12,7 @@ use rusty_patio::{
     websocket::connect_streamdeck,
 };
 
-use the_bus_telemetry::api::{RequestConfig, get_current_vehicle_name, get_vehicle};
+use the_bus_telemetry::api::{get_current_vehicle_name, get_vehicle, RequestConfig};
 use the_bus_telemetry::api2vehicle::get_vehicle_state_from_api;
 use the_bus_telemetry::vehicle::{init_vehicle_state, print_vehicle_state};
 use the_bus_telemetry::vehicle_diff::compare_vehicle_states;
@@ -327,107 +326,110 @@ async fn main() {
 
         loop {
             tokio::select! {
-                                maybe_event = client.received_events.recv() => {
-                                    match maybe_event {
-                                                        Some(event) => {
+                                    maybe_event = client.received_events.recv() => {
+                                        match maybe_event {
+                                                            Some(event) => {
 
-                                                                if config.debugging {
-                                                                    let line = describe_event(&event);
-                                                                    if let Err(e) = writeln!(log_file, "{}", line) {
-                                                                        eprintln!("Failed to write to log file: {}", e);
+                                                                    if config.debugging {
+                                                                        let line = describe_event(&event);
+                                                                        if let Err(e) = writeln!(log_file, "{}", line) {
+                                                                            eprintln!("Failed to write to log file: {}", e);
+                                                                        }
+                                                                        write_all_buttons_to_log(&mut log_file, &buttons);
                                                                     }
-                                                                    write_all_buttons_to_log(&mut log_file, &buttons);
-                                                                }
 
-                                                            let action = match &event {
-                                                                EventReceived::WillAppear(e) => e.action.clone(),
-                                                                EventReceived::WillDisappear(e) => e.action.clone(),
-                                                                EventReceived::TitleParametersDidChange(e) => e.action.clone(),
-                                                                EventReceived::KeyDown(e) => e.action.clone() ,
-                                                                EventReceived::KeyUp(e) => e.action.clone(),
-                                                                EventReceived::PropertyInspectorDidAppear(e) => e.action.clone() ,
-                                                                EventReceived::SendToPlugin(e) => e.action.clone() ,
-                                                                EventReceived::TouchTap(e) => e.action.clone(),
-                                                                EventReceived::DidReceiveSettings(e) => e.action.clone(),
-                                                                EventReceived::DialPress(e) => e.action.clone() ,
-                                                                EventReceived::DialRotate(e) => e.action.clone(),
-                                                                _ => "".to_string(),
-                                                            };
+                                                                let action = match &event {
+                                                                    EventReceived::WillAppear(e) => e.action.clone(),
+                                                                    EventReceived::WillDisappear(e) => e.action.clone(),
+                                                                    EventReceived::TitleParametersDidChange(e) => e.action.clone(),
+                                                                    EventReceived::KeyDown(e) => e.action.clone() ,
+                                                                    EventReceived::KeyUp(e) => e.action.clone(),
+                                                                    EventReceived::PropertyInspectorDidAppear(e) => e.action.clone() ,
+                                                                    EventReceived::SendToPlugin(e) => e.action.clone() ,
+                                                                    EventReceived::TouchTap(e) => e.action.clone(),
+                                                                    EventReceived::DidReceiveSettings(e) => e.action.clone(),
+                                                                    EventReceived::DialPress(e) => e.action.clone() ,
+                                                                    EventReceived::DialRotate(e) => e.action.clone(),
+                                                                    _ => "".to_string(),
+                                                                };
 
-                                                            // we only care about events that have an action entry (are about a button/instance )
-                                                            if action == UUID_INBUS { handle_event_inbus(event,&config, &mut buttons, &mut client).await; }
-                                                            else if action == UUID_FIXING_BRAKE { handle_event_fixing_brake(event,&config, &mut buttons, &mut client).await; }
-                                                            else if action == UUID_GEARSELECT { handle_event_fixing_gearselect(event,&config, &mut buttons, &mut client).await; }
-                                                            else if action == UUID_IGNITION { handle_event_ignition(event,&config, &mut buttons, &mut client).await; }
-                                                            else if action == UUID_PASSENGER_DOORS { handle_event_passenger_doors(event,&config, &mut buttons, &mut client).await; }
+                                                                // we only care about events that have an action entry (are about a button/instance )
+                                                                if action == UUID_INBUS { handle_event_inbus(event,&config, &mut buttons, &mut client).await; }
+                                                                else if action == UUID_FIXING_BRAKE { handle_event_fixing_brake(event,&config, &mut buttons, &mut client).await; }
+                                                                else if action == UUID_GEARSELECT { handle_event_fixing_gearselect(event,&config, &mut buttons, &mut client).await; }
+                                                                else if action == UUID_IGNITION { handle_event_ignition(event,&config, &mut buttons, &mut client).await; }
+                                                                else if action == UUID_PASSENGER_DOORS { handle_event_passenger_doors(event,&config, &mut buttons, &mut client).await; }
+
+                                                            }
+                                                            None => break,
+                                        }
+                                    },
+
+                                    _ = ticker.tick() => {
+
+                                                        if (vehicle_name.is_empty()) || (zaehler>10){
+                                                            config.vehicle_name = "Current".to_string();
+                                                            vehicle_name = get_current_vehicle_name(&config).await;
+                                                            zaehler = 0;
+                                                        }
+
+                                                        if vehicle_name.is_empty() {
+                                                            vehicle_state = init_vehicle_state();
+                                                            set_state_for_uuid(&mut buttons, UUID_INBUS, 0, &mut client).await;
+
+                                                        } else {
+
+                                                        if config.debugging {
+                                                            logger(&format!("Vehicle-Name: {}", vehicle_name));
+                                                        }
+
+                                                        config.vehicle_name = vehicle_name.clone();
+
+                                                        let vehicle_response = get_vehicle(&config).await;
+                                                        if vehicle_response.is_err() {
+                                                            // println!("Error getting vehicle data in JSON.");
+                                                            vehicle_name = "".to_string();
+                                                            zaehler = 12;
+
+                                                        } else {
+
+                                                        zaehler = zaehler + 1;
+
+                                                        let vehicle = vehicle_response.unwrap();
+                                                        // println!("{:?}", vehicle);
+                                                        if config.vehicle_model != vehicle.vehicle_model {
+                                                            config.vehicle_model = vehicle.vehicle_model.clone();
+                                                        }
+
+                                                        let new_vehicle_state = get_vehicle_state_from_api(vehicle);
+                                                        if config.debugging {
+                                                            print_vehicle_state(&new_vehicle_state);
+                                                        }
+
+                                                        if config.debugging {
+                                                            compare_vehicle_states(&vehicle_state, &new_vehicle_state, false);
+                                                        }
+
+                                                        vehicle_state = new_vehicle_state;
+
+                                                        set_state_for_uuid(&mut buttons, UUID_INBUS, 1, &mut client).await;
+                                                        set_state_for_uuid(&mut buttons, UUID_FIXING_BRAKE, vehicle_state.fixing_brake, &mut client).await;
+
+                                                        set_gearselect_for_uuid(&mut buttons, UUID_GEARSELECT, vehicle_state.gear_selector, &mut client).await;
+
+                                                        // lamps
+                                                        door_lamps[0]=vehicle_state.doors;
+                                                        door_lamps[1]=vehicle_state.lights_front_door;
+                                                        door_lamps[2]=vehicle_state.lights_second_door;
+                                                        door_lamps[3]=vehicle_state.lights_third_door;
+                                                        door_lamps[4]=vehicle_state.lights_fourth_door;
+                                                        set_door_lamps_for_uuid(&mut buttons, UUID_PASSENGER_DOORS, door_lamps, &mut client).await;
 
                                                         }
-                                                        None => break,
+                                            }
+
                                     }
-                                },
-
-                                _ = ticker.tick() => {
-
-                                                    if (vehicle_name.is_empty()) || (zaehler>10){
-                                                        config.vehicle_name = "Current".to_string();
-                                                        vehicle_name = get_current_vehicle_name(&config).await;
-                                                        zaehler = 0;
-                                                    }
-
-                                                    if vehicle_name.is_empty() {
-                                                        vehicle_state = init_vehicle_state();
-                                                        set_state_for_uuid(&mut buttons, UUID_INBUS, 0, &mut client).await;
-
-                                                    } else {
-
-                                                    if config.debugging {
-                                                        println!("Vehicle-Name: {}", vehicle_name);
-                                                    }
-
-                                                    config.vehicle_name = vehicle_name.clone();
-
-                                                    let vehicle_response = get_vehicle(&config).await;
-                                                    if vehicle_response.is_err() {
-                                                        // println!("Error getting vehicle data in JSON.");
-                                                        vehicle_name = "".to_string();
-                                                        zaehler = 12;
-
-                                                    } else {
-
-                                                    zaehler = zaehler + 1;
-
-                                                    let vehicle = vehicle_response.unwrap();
-                                                    // println!("{:?}", vehicle);
-
-                                                    let new_vehicle_state = get_vehicle_state_from_api(vehicle);
-                                                    if config.debugging {
-                                                        print_vehicle_state(&new_vehicle_state);
-                                                    }
-
-                                                    if config.debugging {
-                                                        compare_vehicle_states(&vehicle_state, &new_vehicle_state, false);
-                                                    }
-
-                                                    vehicle_state = new_vehicle_state;
-
-                                                    set_state_for_uuid(&mut buttons, UUID_INBUS, 1, &mut client).await;
-                                                    set_state_for_uuid(&mut buttons, UUID_FIXING_BRAKE, vehicle_state.fixing_brake, &mut client).await;
-
-                                                    set_gearselect_for_uuid(&mut buttons, UUID_GEARSELECT, vehicle_state.gear_selector, &mut client).await;
-
-                                                    // lamps
-                                                    door_lamps[0]=vehicle_state.doors;
-                                                    door_lamps[1]=vehicle_state.lights_front_door;
-                                                    door_lamps[2]=vehicle_state.lights_second_door;
-                                                    door_lamps[3]=vehicle_state.lights_third_door;
-                                                    door_lamps[4]=vehicle_state.lights_fourth_door;
-                                                    set_door_lamps_for_uuid(&mut buttons, UUID_PASSENGER_DOORS, door_lamps, &mut client).await;
-
-                                                    }
-                                        }
-
-                                }
-            }
+                }
         }
     }
 }

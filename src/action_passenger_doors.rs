@@ -6,6 +6,32 @@ use rusty_patio::streamdeck::generic::StreamDeckTarget;
 use rusty_patio::streamdeck::{client::StreamDeckClient, events::event_received::EventReceived};
 use the_bus_telemetry::api::{send_telemetry_bus_cmd, RequestConfig};
 
+pub fn get_door_action(doorselector: &str, model: &str) -> String {
+    let mut d = "";
+
+    if (model == "Citea LLE") {
+        d = match doorselector {
+            "Door 1" => "DoorFrontOpenClose",
+            "Door 2" => "MiddleDoorOpenClose",
+            "Door 3" => "RearDoorOpenClose",
+            "Door 4" => "FourthDoorOpenClose",
+            "Clearance" => "ToggleDoorClearance",
+            _ => "DoorFrontOpenClose",
+        }
+    } else {
+        d = match doorselector {
+            "Door 1" => "DoorFrontOpenClose",
+            "Door 2" => "DoorMiddleOpenClose",
+            "Door 3" => "DoorRearOpenClose",
+            "Door 4" => "DoorFourthOpenClose",
+            "Clearance" => "ToggleDoorClearance",
+            _ => "DoorFrontOpenClose",
+        }
+    }
+
+    d.to_string()
+}
+
 pub async fn handle_event_passenger_doors(
     event: EventReceived,
     config: &RequestConfig,
@@ -71,14 +97,7 @@ pub async fn handle_event_passenger_doors(
                     doorselector = "Door 1".to_string();
                 }
 
-                let d = match doorselector.as_str() {
-                    "Door 1" => "DoorFrontOpenClose",
-                    "Door 2" => "DoorMiddleOpenClose",
-                    "Door 3" => "DoorRearOpenClose",
-                    "Door 4" => "DoorFourthOpenClose",
-                    "Clearance" => "ToggleDoorClearance",
-                    _ => "DoorFrontOpenClose",
-                };
+                let d = get_door_action(doorselector.as_str(), &config.vehicle_model);
 
                 let cmd = format!("sendeventpress?event={}", d);
 
@@ -93,14 +112,7 @@ pub async fn handle_event_passenger_doors(
                     doorselector = "Door 1".to_string();
                 }
 
-                let d = match doorselector.as_str() {
-                    "Door 1" => "DoorFrontOpenClose",
-                    "Door 2" => "DoorMiddleOpenClose",
-                    "Door 3" => "DoorRearOpenClose",
-                    "Door 4" => "DoorFourthOpenClose",
-                    "Clearance" => "ToggleDoorClearance",
-                    _ => "DoorFrontOpenClose",
-                };
+                let d = get_door_action(doorselector.as_str(), &config.vehicle_model);
 
                 let cmd = format!("sendeventrelease?event={}", d);
 
