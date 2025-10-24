@@ -81,6 +81,22 @@
       "SupportedInMultiActions": false,
       "DisableAutomaticStates": true,
       "Controllers": ["Keypad"]
+    },
+    {
+      "Icon": "actions/assets/doorbutton_off",
+      "Name": "Door Button",
+      "States": [
+        {
+          "Image": "actions/assets/doorbutton_off"
+        }
+      ],
+
+      "Tooltip": "Controls the passenger doors.",
+      "UUID": "de.thatzok.thebus.dooraction",
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Controllers": ["Keypad"],
+      "PropertyInspectorPath": "actions/property-inspector/doorbuttoninspector.html"
     }
   ]
 }

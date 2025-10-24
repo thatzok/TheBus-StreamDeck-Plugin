@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-
+use std::fmt::format;
 use std::fs::OpenOptions;
 
 use std::io::Write;
@@ -22,16 +22,19 @@ use crate::action_fixing_brake::handle_event_fixing_brake;
 use crate::action_fixing_gearselect::handle_event_fixing_gearselect;
 use crate::action_ignition::handle_event_ignition;
 use crate::action_inbus::handle_event_inbus;
+use crate::action_passenger_doors::handle_event_passenger_doors;
 
 mod action_fixing_brake;
 mod action_fixing_gearselect;
 mod action_ignition;
 mod action_inbus;
+mod action_passenger_doors;
 
 const UUID_FIXING_BRAKE: &str = "de.thatzok.thebus.fixingbrake";
 const UUID_INBUS: &str = "de.thatzok.thebus.inbus";
 const UUID_GEARSELECT: &str = "de.thatzok.thebus.gearselect";
 const UUID_IGNITION: &str = "de.thatzok.thebus.ignition";
+const UUID_PASSENGER_DOORS: &str = "de.thatzok.thebus.dooraction";
 
 struct ActionInstance {
     title: String,
@@ -238,6 +241,63 @@ async fn set_gearselect_for_uuid(
         }
     }
 }
+async fn set_door_lamps_for_uuid(
+    buttons: &mut HashMap<String, ActionInstance>,
+    uuid: &str,
+    lamps: [u8; 5],
+    client: &mut StreamDeckClient,
+) {
+    for (context, btn) in buttons.iter_mut() {
+        if btn.uuid == uuid {
+            // first we have to determine which index is our state
+            let mut doorselector = get_value_or_empty(&btn.settings, "DoorSelector");
+            if doorselector.is_empty() {
+                doorselector = "Door 1".to_string();
+            }
+
+            let doorindex = match doorselector.as_str() {
+                "Door 1" => 1,
+                "Door 2" => 2,
+                "Door 3" => 3,
+                "Door 4" => 4,
+                _ => 0,
+            };
+
+            let state = lamps[doorindex];
+
+            if btn.state != state {
+                btn.state = state;
+                let mut gear = get_value_or_empty(&btn.settings, "GearSelection");
+                if gear.is_empty() {
+                    gear = "2".to_string();
+                }
+
+                let mut active = "off";
+                if btn.state == 1 {
+                    active = "on";
+                } else {
+                    active = "off";
+                }
+
+                let mut image = format!("actions/assets/doorbutton_{}.png", active);
+
+                if doorselector == "Clearance" {
+                    image = format!("actions/assets/doorclearance_{}.png", active);
+                }
+
+                let _ = client
+                    .transmitter
+                    .set_image(
+                        context.clone(),
+                        image,
+                        StreamDeckTarget::HARDWARE_AND_SOFTWARE,
+                        None,
+                    )
+                    .await;
+            }
+        }
+    }
+}
 
 #[tokio::main(worker_threads = 1)]
 async fn main() {
@@ -259,6 +319,8 @@ async fn main() {
     let mut vehicle_state = init_vehicle_state();
 
     let mut zaehler = 0;
+
+    let mut door_lamps = [0; 5];
 
     if let Ok(mut client) = client {
         let mut ticker = tokio::time::interval(Duration::from_millis(300));
@@ -297,6 +359,7 @@ async fn main() {
                                                             else if action == UUID_FIXING_BRAKE { handle_event_fixing_brake(event,&config, &mut buttons, &mut client).await; }
                                                             else if action == UUID_GEARSELECT { handle_event_fixing_gearselect(event,&config, &mut buttons, &mut client).await; }
                                                             else if action == UUID_IGNITION { handle_event_ignition(event,&config, &mut buttons, &mut client).await; }
+                                                            else if action == UUID_PASSENGER_DOORS { handle_event_passenger_doors(event,&config, &mut buttons, &mut client).await; }
 
                                                         }
                                                         None => break,
@@ -351,6 +414,15 @@ async fn main() {
                                                     set_state_for_uuid(&mut buttons, UUID_FIXING_BRAKE, vehicle_state.fixing_brake, &mut client).await;
 
                                                     set_gearselect_for_uuid(&mut buttons, UUID_GEARSELECT, vehicle_state.gear_selector, &mut client).await;
+
+                                                    // lamps
+                                                    door_lamps[0]=vehicle_state.doors;
+                                                    door_lamps[1]=vehicle_state.lights_front_door;
+                                                    door_lamps[2]=vehicle_state.lights_second_door;
+                                                    door_lamps[3]=vehicle_state.lights_third_door;
+                                                    door_lamps[4]=vehicle_state.lights_fourth_door;
+                                                    set_door_lamps_for_uuid(&mut buttons, UUID_PASSENGER_DOORS, door_lamps, &mut client).await;
+
                                                     }
                                         }
 
