@@ -97,6 +97,21 @@
       "DisableAutomaticStates": true,
       "Controllers": ["Keypad"],
       "PropertyInspectorPath": "actions/property-inspector/doorbuttoninspector.html"
+    },
+    {
+      "Icon": "actions/assets/indicator_menu",
+      "Name": "Indicator Control",
+      "States": [
+        {
+          "Image": "actions/assets/indicator_menu"
+        }
+      ],
+      "Tooltip": "Controls Indicators and Warning Lights",
+      "UUID": "de.thatzok.thebus.indicatorcontrol",
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Controllers": ["Keypad"],
+      "PropertyInspectorPath": "actions/property-inspector/indicatorcontrolinspector.html"
     }
   ]
 }
