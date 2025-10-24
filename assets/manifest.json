@@ -7,7 +7,7 @@
   "Icon": "Category",
   "Name": "The Bus",
   "Version": "1.0",
-  "Category": "The Bus",
+  "Category": "The Bus Telemetry",
   "CategoryIcon": "Category",
   "OS": [
     {
@@ -129,6 +129,21 @@
       "Tooltip": "Controls the Bus stop brake",
       "UUID": "de.thatzok.thebus.stopbrake",
       "Controllers": ["Keypad"]
+    },
+    {
+      "Icon": "actions/assets/coin",
+      "Name": "Cash Change Button",
+      "States": [
+        {
+          "Image": "actions/assets/coin"
+        }
+      ],
+      "Tooltip": "Controls the cash system.",
+      "UUID": "de.thatzok.thebus.changeaction",
+      "Controllers": ["Keypad"],
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "PropertyInspectorPath": "actions/property-inspector/changebuttoninspector.html"
     }
   ]
 }

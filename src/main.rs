@@ -25,6 +25,7 @@ use the_bus_telemetry::api::{get_current_vehicle_name, get_vehicle, RequestConfi
 use the_bus_telemetry::api2vehicle::get_vehicle_state_from_api;
 use the_bus_telemetry::vehicle::{init_vehicle_state, print_vehicle_state};
 use the_bus_telemetry::vehicle_diff::compare_vehicle_states;
+use crate::action_change::handle_event_change;
 
 mod action_fixing_brake;
 mod action_fixing_gearselect;
@@ -33,6 +34,7 @@ mod action_inbus;
 mod action_indicators;
 mod action_passenger_doors;
 mod action_stop_brake;
+mod action_change;
 
 const UUID_FIXING_BRAKE: &str = "de.thatzok.thebus.fixingbrake";
 const UUID_INBUS: &str = "de.thatzok.thebus.inbus";
@@ -41,6 +43,7 @@ const UUID_IGNITION: &str = "de.thatzok.thebus.ignition";
 const UUID_PASSENGER_DOORS: &str = "de.thatzok.thebus.dooraction";
 const UUID_INDICATORS: &str = "de.thatzok.thebus.indicatorcontrol";
 const UUID_STOP_BRAKE: &str = "de.thatzok.thebus.stopbrake";
+const UUID_CHANGE: &str = "de.thatzok.thebus.changeaction";
 
 struct ActionInstance {
     title: String,
@@ -366,7 +369,7 @@ async fn main() {
     let mut vehicle_name = "".to_string();
 
     let mut config = RequestConfig::new();
-    // config.debugging = true;
+//    config.debugging = true;
 
     let mut vehicle_state = init_vehicle_state();
 
@@ -417,6 +420,7 @@ async fn main() {
                                                             else if action == UUID_PASSENGER_DOORS { handle_event_passenger_doors(event,&config, &mut buttons, &mut client).await; }
                                                             else if action == UUID_INDICATORS { handle_event_indicators(event,&config, &mut buttons, &mut client).await; }
                                                             else if action == UUID_STOP_BRAKE { handle_event_stop_brake(event,&config, &mut buttons, &mut client).await; }
+                                                            else if action == UUID_CHANGE { handle_event_change(event,&config, &mut buttons, &mut client).await; }
 
                                                         }
                                                         None => break,
@@ -485,7 +489,7 @@ async fn main() {
                                                     if (vehicle_state.indicator == 2) || (vehicle_state.lights_warning == 1) {
                                                         indicator_lamps[2]=blinken_lights;
                                                     }
-                                                    
+
                                                     set_indicator_lamps_for_uuid(&mut buttons, UUID_INDICATORS, indicator_lamps, &mut client).await;
 
 
