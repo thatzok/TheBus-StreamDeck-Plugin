@@ -475,7 +475,7 @@ async fn main() {
                                                     // lights_warning: 1:on 0:off
                                                     // indicator_lamps[0]=blinken_lights;
 
-                                                    indicator_lamps[0]=0;
+                                                    indicator_lamps[0]=vehicle_state.lights_warning;
                                                     indicator_lamps[1]=0;
                                                     indicator_lamps[2]=0;
 
@@ -485,7 +485,7 @@ async fn main() {
                                                     if (vehicle_state.indicator == 2) || (vehicle_state.lights_warning == 1) {
                                                         indicator_lamps[2]=blinken_lights;
                                                     }
-
+                                                    
                                                     set_indicator_lamps_for_uuid(&mut buttons, UUID_INDICATORS, indicator_lamps, &mut client).await;
 
 
