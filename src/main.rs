@@ -12,11 +12,6 @@ use rusty_patio::{
     websocket::connect_streamdeck,
 };
 
-use the_bus_telemetry::api::{get_current_vehicle_name, get_vehicle, RequestConfig};
-use the_bus_telemetry::api2vehicle::get_vehicle_state_from_api;
-use the_bus_telemetry::vehicle::{init_vehicle_state, print_vehicle_state};
-use the_bus_telemetry::vehicle_diff::compare_vehicle_states;
-
 use crate::action_fixing_brake::handle_event_fixing_brake;
 use crate::action_fixing_gearselect::handle_event_fixing_gearselect;
 use crate::action_ignition::handle_event_ignition;
@@ -25,6 +20,11 @@ use crate::action_indicators::{
     get_indicator_image_off, get_indicator_image_on, handle_event_indicators,
 };
 use crate::action_passenger_doors::handle_event_passenger_doors;
+use crate::action_stop_brake::handle_event_stop_brake;
+use the_bus_telemetry::api::{get_current_vehicle_name, get_vehicle, RequestConfig};
+use the_bus_telemetry::api2vehicle::get_vehicle_state_from_api;
+use the_bus_telemetry::vehicle::{init_vehicle_state, print_vehicle_state};
+use the_bus_telemetry::vehicle_diff::compare_vehicle_states;
 
 mod action_fixing_brake;
 mod action_fixing_gearselect;
@@ -32,6 +32,7 @@ mod action_ignition;
 mod action_inbus;
 mod action_indicators;
 mod action_passenger_doors;
+mod action_stop_brake;
 
 const UUID_FIXING_BRAKE: &str = "de.thatzok.thebus.fixingbrake";
 const UUID_INBUS: &str = "de.thatzok.thebus.inbus";
@@ -39,6 +40,7 @@ const UUID_GEARSELECT: &str = "de.thatzok.thebus.gearselect";
 const UUID_IGNITION: &str = "de.thatzok.thebus.ignition";
 const UUID_PASSENGER_DOORS: &str = "de.thatzok.thebus.dooraction";
 const UUID_INDICATORS: &str = "de.thatzok.thebus.indicatorcontrol";
+const UUID_STOP_BRAKE: &str = "de.thatzok.thebus.stopbrake";
 
 struct ActionInstance {
     title: String,
@@ -414,6 +416,7 @@ async fn main() {
                                                             else if action == UUID_IGNITION { handle_event_ignition(event,&config, &mut buttons, &mut client).await; }
                                                             else if action == UUID_PASSENGER_DOORS { handle_event_passenger_doors(event,&config, &mut buttons, &mut client).await; }
                                                             else if action == UUID_INDICATORS { handle_event_indicators(event,&config, &mut buttons, &mut client).await; }
+                                                            else if action == UUID_STOP_BRAKE { handle_event_stop_brake(event,&config, &mut buttons, &mut client).await; }
 
                                                         }
                                                         None => break,
@@ -499,6 +502,7 @@ async fn main() {
                                                     door_lamps[4]=vehicle_state.lights_fourth_door;
                                                     set_door_lamps_for_uuid(&mut buttons, UUID_PASSENGER_DOORS, door_lamps, &mut client).await;
 
+                                                    set_state_for_uuid(&mut buttons, UUID_STOP_BRAKE, vehicle_state.lights_stop_brake, &mut client).await;
 
                                                     }
                                         }

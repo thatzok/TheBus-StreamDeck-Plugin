@@ -112,6 +112,23 @@
       "DisableAutomaticStates": true,
       "Controllers": ["Keypad"],
       "PropertyInspectorPath": "actions/property-inspector/indicatorcontrolinspector.html"
+    },
+    {
+      "Icon": "actions/assets/busstop_brake_off",
+      "Name": "Bus stop brake",
+      "States": [
+        {
+          "Image": "actions/assets/busstop_brake_off"
+        },
+        {
+          "Image": "actions/assets/busstop_brake_on"
+        }
+      ],
+      "SupportedInMultiActions": false,
+      "DisableAutomaticStates": true,
+      "Tooltip": "Controls the Bus stop brake",
+      "UUID": "de.thatzok.thebus.stopbrake",
+      "Controllers": ["Keypad"]
     }
   ]
 }
