@@ -37,7 +37,7 @@
       "Controllers": ["Keypad"]
     },
     {
-      "Icon": "actions/assets/fixing_brake_off",
+      "Icon": "actions/assets/parking_brake",
       "Name": "Parking brake",
       "States": [
         {
@@ -114,7 +114,7 @@
       "PropertyInspectorPath": "actions/property-inspector/indicatorcontrolinspector.html"
     },
     {
-      "Icon": "actions/assets/busstop_brake_off",
+      "Icon": "actions/assets/stop_brake",
       "Name": "Bus stop brake",
       "States": [
         {
