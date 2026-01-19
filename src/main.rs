@@ -23,8 +23,7 @@ use crate::action_passenger_doors::handle_event_passenger_doors;
 use crate::action_stop_brake::handle_event_stop_brake;
 use the_bus_telemetry::api::{get_current_vehicle_name, get_vehicle, RequestConfig};
 use the_bus_telemetry::api2vehicle::get_vehicle_state_from_api;
-use the_bus_telemetry::vehicle::{init_vehicle_state, print_vehicle_state};
-use the_bus_telemetry::vehicle_diff::compare_vehicle_states;
+use komsi::vehicle::VehicleState;
 use crate::action_change::handle_event_change;
 
 mod action_fixing_brake;
@@ -139,6 +138,23 @@ fn get_value_or_empty(map: &HashMap<String, serde_json::Value>, key: &str) -> St
     let fasel: serde_json::Value = bla.unwrap();
     let ret = fasel.as_str().unwrap_or("");
     ret.to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn test_get_value_or_empty() {
+        let mut map = HashMap::new();
+        map.insert("key1".to_string(), json!("value1"));
+        map.insert("key2".to_string(), json!(123));
+
+        assert_eq!(get_value_or_empty(&map, "key1"), "value1");
+        assert_eq!(get_value_or_empty(&map, "key2"), ""); // json!(123) is not a string
+        assert_eq!(get_value_or_empty(&map, "key3"), ""); // non-existent key
+    }
 }
 
 async fn set_value_for_uuid(
@@ -334,7 +350,7 @@ async fn set_indicator_lamps_for_uuid(
             if btn.state != state {
                 btn.state = state;
                 let mut image = "".to_string();
-                if (state == 0) {
+                if state == 0 {
                     image = get_indicator_image_off(indicatorselector.as_str());
                 } else {
                     image = get_indicator_image_on(indicatorselector.as_str());
@@ -371,7 +387,7 @@ async fn main() {
     let mut config = RequestConfig::new();
 //    config.debugging = true;
 
-    let mut vehicle_state = init_vehicle_state();
+    let mut vehicle_state = VehicleState::default();
 
     let mut zaehler = 0;
 
@@ -436,7 +452,7 @@ async fn main() {
                                                     }
 
                                                     if vehicle_name.is_empty() {
-                                                        vehicle_state = init_vehicle_state();
+                                                        vehicle_state = VehicleState::default();
                                                         set_state_for_uuid(&mut buttons, UUID_INBUS, 0, &mut client).await;
 
                                                     } else {
@@ -460,12 +476,13 @@ async fn main() {
                                                     }
 
                                                     let new_vehicle_state = get_vehicle_state_from_api(vehicle);
+
                                                     if config.debugging {
-                                                        print_vehicle_state(&new_vehicle_state);
+                                                        new_vehicle_state.print();
                                                     }
 
                                                     if config.debugging {
-                                                        compare_vehicle_states(&vehicle_state, &new_vehicle_state, false);
+                                                        vehicle_state.compare(&new_vehicle_state, false, None);
                                                     }
 
                                                     vehicle_state = new_vehicle_state;

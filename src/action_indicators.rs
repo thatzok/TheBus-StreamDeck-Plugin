@@ -31,6 +31,27 @@ pub fn get_indicator_image_off(indicatorselector: &str) -> String {
     d.to_string()
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_indicator_image_on() {
+        assert_eq!(get_indicator_image_on("IndicatorRight"), "actions/assets/indicator_right_on.png");
+        assert_eq!(get_indicator_image_on("IndicatorLeft"), "actions/assets/indicator_left_on.png");
+        assert_eq!(get_indicator_image_on("WarningLights"), "actions/assets/warninglights_on.png");
+        assert_eq!(get_indicator_image_on("Unknown"), "actions/assets/warninglights_on.png");
+    }
+
+    #[test]
+    fn test_get_indicator_image_off() {
+        assert_eq!(get_indicator_image_off("IndicatorRight"), "actions/assets/indicator_right_off.png");
+        assert_eq!(get_indicator_image_off("IndicatorLeft"), "actions/assets/indicator_left_off.png");
+        assert_eq!(get_indicator_image_off("WarningLights"), "actions/assets/warninglights_off.png");
+        assert_eq!(get_indicator_image_off("Unknown"), "actions/assets/warninglights_on.png");
+    }
+}
+
 pub async fn handle_event_indicators(
     event: EventReceived,
     config: &RequestConfig,

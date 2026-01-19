@@ -9,7 +9,7 @@ use the_bus_telemetry::api::{send_telemetry_bus_cmd, RequestConfig};
 pub fn get_door_action(doorselector: &str, model: &str) -> String {
     let mut d = "";
 
-    if (model == "Citea LLE") {
+    if model == "Citea LLE" {
         d = match doorselector {
             "Door 1" => "DoorFrontOpenClose",
             "Door 2" => "MiddleDoorOpenClose",
@@ -30,6 +30,33 @@ pub fn get_door_action(doorselector: &str, model: &str) -> String {
     }
 
     d.to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_door_action_citea() {
+        let model = "Citea LLE";
+        assert_eq!(get_door_action("Door 1", model), "DoorFrontOpenClose");
+        assert_eq!(get_door_action("Door 2", model), "MiddleDoorOpenClose");
+        assert_eq!(get_door_action("Door 3", model), "RearDoorOpenClose");
+        assert_eq!(get_door_action("Door 4", model), "FourthDoorOpenClose");
+        assert_eq!(get_door_action("Clearance", model), "ToggleDoorClearance");
+        assert_eq!(get_door_action("Unknown", model), "DoorFrontOpenClose");
+    }
+
+    #[test]
+    fn test_get_door_action_other() {
+        let model = "MAN Lion's City";
+        assert_eq!(get_door_action("Door 1", model), "DoorFrontOpenClose");
+        assert_eq!(get_door_action("Door 2", model), "DoorMiddleOpenClose");
+        assert_eq!(get_door_action("Door 3", model), "DoorRearOpenClose");
+        assert_eq!(get_door_action("Door 4", model), "DoorFourthOpenClose");
+        assert_eq!(get_door_action("Clearance", model), "ToggleDoorClearance");
+        assert_eq!(get_door_action("Unknown", model), "DoorFrontOpenClose");
+    }
 }
 
 pub async fn handle_event_passenger_doors(

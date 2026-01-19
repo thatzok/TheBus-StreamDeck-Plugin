@@ -27,6 +27,29 @@ pub fn get_coin_title(coin: &str) -> String {
     d.to_string()
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_coin_title() {
+        assert_eq!(get_coin_title("Coins5"), "0.05 €");
+        assert_eq!(get_coin_title("Coins10"), "0.10 €");
+        assert_eq!(get_coin_title("Coins15"), "0.15 €");
+        assert_eq!(get_coin_title("Coins20"), "0.20 €");
+        assert_eq!(get_coin_title("Coins30"), "0.30 €");
+        assert_eq!(get_coin_title("Coins50"), "0.50 €");
+        assert_eq!(get_coin_title("Coins60"), "0.60 €");
+        assert_eq!(get_coin_title("Coins100"), "1.00 €");
+        assert_eq!(get_coin_title("Coins200"), "2.00 €");
+        assert_eq!(get_coin_title("Coins400"), "4.00 €");
+        assert_eq!(get_coin_title("Coins600"), "6.00 €");
+        assert_eq!(get_coin_title("Coins800"), "8.00 €");
+        assert_eq!(get_coin_title("Take Cash Money"), "Grab");
+        assert_eq!(get_coin_title("Unknown"), "Grab");
+    }
+}
+
 pub async fn handle_event_change(
     event: EventReceived,
     config: &RequestConfig,
