@@ -22,33 +22,35 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
-      # 1. Binary bauen
+      # 1. Binary im Release-Modus bauen
       - name: Build Binary
         run: cargo build --release
 
-      # 2. Plugin-Struktur ohne Version im Ordnernamen erstellen
-      - name: Prepare Plugin Folder
+      # 2. Flache Struktur für den Installer vorbereiten
+      - name: Prepare Plugin Content
         shell: pwsh
         run: |
-          $pluginName = "de.thatzok.thebus.sdPlugin"
-          New-Item -ItemType Directory -Path $pluginName -Force
+          # Wir erstellen einen temporären Ordner für den Inhalt
+          New-Item -ItemType Directory -Path "dist" -Force
           
-          Copy-Item "target/release/thebus-streamdeck-plugin.exe" "$pluginName/"
+          # Das Binary hineinkopieren
+          Copy-Item "target/release/thebus-streamdeck-plugin.exe" "dist/"
           
+          # Alle Assets (inkl. manifest.json) direkt in den dist-Ordner kopieren
           if (Test-Path "assets") {
-            Copy-Item -Path "assets/*" -Destination "$pluginName/" -Recurse -Force
+            Copy-Item -Path "assets/*" -Destination "dist/" -Recurse -Force
           }
 
-      # 3. ZIP-Archiv OHNE Versionsnummer im Dateinamen erstellen
-      - name: Create ZIP Archive
+      # 3. Das .streamDeckPlugin Paket erstellen
+      # WICHTIG: Wir packen den INHALT von dist, damit manifest.json ganz oben liegt
+      - name: Create Stream Deck Plugin Package
         shell: pwsh
         run: |
-          $pluginName = "de.thatzok.thebus.sdPlugin"
-          Compress-Archive -Path $pluginName -DestinationPath "$pluginName.zip"
+          Compress-Archive -Path dist/* -DestinationPath "de.thatzok.thebus.sdPlugin.streamDeckPlugin"
 
       # 4. Upload zum GitHub Release
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: "de.thatzok.thebus.sdPlugin.zip"
+          files: "de.thatzok.thebus.sdPlugin.streamDeckPlugin"
           generate_release_notes: true
