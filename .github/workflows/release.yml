@@ -22,30 +22,33 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
+      # 1. Binary bauen
       - name: Build Binary
         run: cargo build --release
 
+      # 2. Plugin-Struktur ohne Version im Ordnernamen erstellen
       - name: Prepare Plugin Folder
         shell: pwsh
         run: |
-          # Zielordner erstellen
-          New-Item -ItemType Directory -Path "de.thatzok.thebus.sdPlugin" -Force
+          $pluginName = "de.thatzok.thebus.sdPlugin"
+          New-Item -ItemType Directory -Path $pluginName -Force
           
-          # Binary kopieren
-          Copy-Item "target/release/thebus-streamdeck-plugin.exe" "de.thatzok.thebus.sdPlugin/"
+          Copy-Item "target/release/thebus-streamdeck-plugin.exe" "$pluginName/"
           
-          # Gesamten Inhalt des Assets-Ordners (inkl. manifest.json) kopieren
           if (Test-Path "assets") {
-            Copy-Item -Path "assets/*" -Destination "de.thatzok.thebus.sdPlugin/" -Recurse -Force
+            Copy-Item -Path "assets/*" -Destination "$pluginName/" -Recurse -Force
           }
 
+      # 3. ZIP-Archiv OHNE Versionsnummer im Dateinamen erstellen
       - name: Create ZIP Archive
         shell: pwsh
         run: |
-          Compress-Archive -Path de.thatzok.thebus.sdPlugin -DestinationPath "de.thatzok.thebus.sdPlugin_${{ github.ref_name }}.zip"
+          $pluginName = "de.thatzok.thebus.sdPlugin"
+          Compress-Archive -Path $pluginName -DestinationPath "$pluginName.zip"
 
+      # 4. Upload zum GitHub Release
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: "de.thatzok.thebus.sdPlugin_${{ github.ref_name }}.zip"
+          files: "de.thatzok.thebus.sdPlugin.zip"
           generate_release_notes: true
