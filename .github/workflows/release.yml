@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-windows:
-    name: Build Stream Deck Plugin
+    name: Build & Package Plugin
     runs-on: windows-latest
     permissions:
       contents: write
@@ -22,41 +22,35 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
-      # 1. Binary im Release-Modus bauen
+      # 1. Binary bauen
       - name: Build Binary
         run: cargo build --release
 
-      # 2. Korrekte Ordnerstruktur erstellen
-      - name: Prepare Plugin Content
+      # 2. Ordnerstruktur vorbereiten (MUSS auf .sdPlugin enden)
+      - name: Prepare Plugin Directory
         shell: pwsh
         run: |
-          # Der Ordner MUSS genau so heißen wie die Plugin-ID
-          $pluginName = "de.thatzok.thebus.sdPlugin"
-          $distPath = "dist/$pluginName"
-          
-          # Ordnerstruktur anlegen
-          New-Item -ItemType Directory -Path $distPath -Force
-          
-          # Das Binary in den .sdPlugin Ordner kopieren
-          Copy-Item "target/release/thebus-streamdeck-plugin.exe" "$distPath/"
-          
-          # Assets (inkl. manifest.json) in den .sdPlugin Ordner kopieren
+          $pluginDir = "de.thatzok.thebus.sdPlugin"
+          New-Item -ItemType Directory -Path $pluginDir -Force
+          Copy-Item "target/release/thebus-streamdeck-plugin.exe" "$pluginDir/"
           if (Test-Path "assets") {
-            Copy-Item -Path "assets/*" -Destination "$distPath/" -Recurse -Force
+            Copy-Item -Path "assets/*" -Destination "$pluginDir/" -Recurse -Force
           }
+          # Das Tool braucht einen leeren Output-Ordner
+          New-Item -ItemType Directory -Path "Release" -Force
 
-      # 3. Das .streamDeckPlugin Paket erstellen
-      # WICHTIG: Wir packen den ORDNER dist/de.thatzok.thebus.sdPlugin, nicht den Inhalt
-      - name: Create Stream Deck Plugin Package
-        shell: pwsh
-        run: |
-          # Wir zippen den gesamten Unterordner aus dist
-          Compress-Archive -Path "dist/de.thatzok.thebus.sdPlugin" -DestinationPath "de.thatzok.thebus.sdPlugin.streamDeckPlugin"
+      # 3. Offizielles Distribution Tool nutzen
+      - name: Package with Elgato Tool
+        uses: AdamCarballo/streamdeck-distribution-tool@v1
+        with:
+          input: de.thatzok.thebus.sdPlugin
+          output: Release
 
       # 4. Upload zum GitHub Release
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: "de.thatzok.thebus.sdPlugin.streamDeckPlugin"
+          # Das Tool generiert den Dateinamen automatisch im Output-Ordner
+          files: "Release/de.thatzok.thebus.sdPlugin.streamDeckPlugin"
           generate_release_notes: true
 
