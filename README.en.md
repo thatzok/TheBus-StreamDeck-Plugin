@@ -16,10 +16,6 @@ Deck and display information on buttons.
 * Door buttons including door clearance
 * Cash change buttons
 
-### Known Bugs
-
-* Solaris Urbino (aka Galaxis Urban) reports incorrect gear state to the telemetry endpoint. The gear can be changed,
-  but only the "N" button lights up
 
 ### Installation and Update instructions
 

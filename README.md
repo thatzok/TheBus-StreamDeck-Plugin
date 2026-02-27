@@ -15,10 +15,6 @@ Dieses Plugin nutzt die Telemetrie-Schnittstelle des TML-Studios-Spiels „The B
 * Türsteuerung inklusive Türfreigabe
 * Geldwechsel-Tasten
 
-### Bekannte Probleme
-
-* Der Solaris Urbino (auch bekannt als Galaxis Urban) meldet einen falschen Gangzustand an den Telemetrie-Endpunkt. Der Gang kann zwar gewechselt werden, aber nur die „N“-Taste leuchtet.
-
 ### Installations- und Update-Anweisungen
 
 1. Lade die ZIP-Datei `de.thatzok.thebus.sdPlugin.zip` (du benötigst nur diese) von der neuesten Version auf der [Releases-Seite](https://github.com/thatzok/TheBus-StreamDeck-Plugin/releases) herunter.
