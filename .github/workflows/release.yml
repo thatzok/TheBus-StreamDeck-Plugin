@@ -26,27 +26,32 @@ jobs:
       - name: Build Binary
         run: cargo build --release
 
-      # 2. Flache Struktur für den Installer vorbereiten
+      # 2. Korrekte Ordnerstruktur erstellen
       - name: Prepare Plugin Content
         shell: pwsh
         run: |
-          # Wir erstellen einen temporären Ordner für den Inhalt
-          New-Item -ItemType Directory -Path "dist" -Force
+          # Der Ordner MUSS genau so heißen wie die Plugin-ID
+          $pluginName = "de.thatzok.thebus.sdPlugin"
+          $distPath = "dist/$pluginName"
           
-          # Das Binary hineinkopieren
-          Copy-Item "target/release/thebus-streamdeck-plugin.exe" "dist/"
+          # Ordnerstruktur anlegen
+          New-Item -ItemType Directory -Path $distPath -Force
           
-          # Alle Assets (inkl. manifest.json) direkt in den dist-Ordner kopieren
+          # Das Binary in den .sdPlugin Ordner kopieren
+          Copy-Item "target/release/thebus-streamdeck-plugin.exe" "$distPath/"
+          
+          # Assets (inkl. manifest.json) in den .sdPlugin Ordner kopieren
           if (Test-Path "assets") {
-            Copy-Item -Path "assets/*" -Destination "dist/" -Recurse -Force
+            Copy-Item -Path "assets/*" -Destination "$distPath/" -Recurse -Force
           }
 
       # 3. Das .streamDeckPlugin Paket erstellen
-      # WICHTIG: Wir packen den INHALT von dist, damit manifest.json ganz oben liegt
+      # WICHTIG: Wir packen den ORDNER dist/de.thatzok.thebus.sdPlugin, nicht den Inhalt
       - name: Create Stream Deck Plugin Package
         shell: pwsh
         run: |
-          Compress-Archive -Path dist/* -DestinationPath "de.thatzok.thebus.sdPlugin.streamDeckPlugin"
+          # Wir zippen den gesamten Unterordner aus dist
+          Compress-Archive -Path "dist/de.thatzok.thebus.sdPlugin" -DestinationPath "de.thatzok.thebus.sdPlugin.streamDeckPlugin"
 
       # 4. Upload zum GitHub Release
       - name: Create Release
@@ -54,3 +59,4 @@ jobs:
         with:
           files: "de.thatzok.thebus.sdPlugin.streamDeckPlugin"
           generate_release_notes: true
+
