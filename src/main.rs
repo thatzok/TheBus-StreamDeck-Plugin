@@ -496,14 +496,14 @@ async fn main() {
                                                     // lights_warning: 1:on 0:off
                                                     // indicator_lamps[0]=blinken_lights;
 
-                                                    indicator_lamps[0]=vehicle_state.lights_warning;
+                                                    indicator_lamps[0]=if vehicle_state.lights_warning { 1 } else { 0 };
                                                     indicator_lamps[1]=0;
                                                     indicator_lamps[2]=0;
 
-                                                    if (vehicle_state.indicator == 1) || (vehicle_state.lights_warning == 1) {
+                                                    if (vehicle_state.indicator == 1) || (vehicle_state.lights_warning) {
                                                         indicator_lamps[1]=blinken_lights;
                                                     }
-                                                    if (vehicle_state.indicator == 2) || (vehicle_state.lights_warning == 1) {
+                                                    if (vehicle_state.indicator == 2) || (vehicle_state.lights_warning) {
                                                         indicator_lamps[2]=blinken_lights;
                                                     }
 
@@ -511,19 +511,19 @@ async fn main() {
 
 
                                                     set_state_for_uuid(&mut buttons, UUID_INBUS, 1, &mut client).await;
-                                                    set_state_for_uuid(&mut buttons, UUID_FIXING_BRAKE, vehicle_state.fixing_brake, &mut client).await;
+                                                    set_state_for_uuid(&mut buttons, UUID_FIXING_BRAKE, if vehicle_state.fixing_brake { 1 } else { 0 }, &mut client).await;
 
                                                     set_gearselect_for_uuid(&mut buttons, UUID_GEARSELECT, vehicle_state.gear_selector, &mut client).await;
 
                                                     // lamps
-                                                    door_lamps[0]=vehicle_state.doors;
-                                                    door_lamps[1]=vehicle_state.lights_front_door;
-                                                    door_lamps[2]=vehicle_state.lights_second_door;
-                                                    door_lamps[3]=vehicle_state.lights_third_door;
-                                                    door_lamps[4]=vehicle_state.lights_fourth_door;
+                                                    door_lamps[0]=if vehicle_state.doors { 1 } else { 0 };
+                                                    door_lamps[1]=if vehicle_state.lights_front_door { 1 } else { 0 };
+                                                    door_lamps[2]=if vehicle_state.lights_second_door { 1 } else { 0 };
+                                                    door_lamps[3]=if vehicle_state.lights_third_door { 1 } else { 0 };
+                                                    door_lamps[4]=if vehicle_state.lights_fourth_door { 1 } else { 0 };
                                                     set_door_lamps_for_uuid(&mut buttons, UUID_PASSENGER_DOORS, door_lamps, &mut client).await;
 
-                                                    set_state_for_uuid(&mut buttons, UUID_STOP_BRAKE, vehicle_state.lights_stop_brake, &mut client).await;
+                                                    set_state_for_uuid(&mut buttons, UUID_STOP_BRAKE, if vehicle_state.lights_stop_brake { 1 } else { 0 }, &mut client).await;
 
                                                     }
                                         }
