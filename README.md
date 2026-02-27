@@ -1,44 +1,45 @@
 # The Bus Stream Deck Plugin
 
-This plugin uses the telemetry interface of the TML Studios game "The Bus" to control in-game functions from the Stream
-Deck and display information on buttons.
+[English version](README.en.md)
 
-### The following features are available and have been tested with The Bus version 3.2:
+Dieses Plugin nutzt die Telemetrie-Schnittstelle des TML-Studios-Spiels „The Bus“, um In-Game-Funktionen über das Stream Deck zu steuern und Informationen auf den Tasten anzuzeigen.
 
-* Status display: Player is in the driver's seat
-* Parking brake
-* Bus stop brake
-* Ignition control
-* Gear selektor
-* Indicator control including warning lights
-* Door buttons including door clearance
-* Cash change buttons
+### Die folgenden Funktionen sind verfügbar und wurden mit der Version 3.3 von The Bus getestet:
 
-### Known Bugs
+* Statusanzeige: Spieler sitzt auf dem Fahrersitz
+* Feststellbremse
+* Haltestellenbremse
+* Zündungssteuerung
+* Gangwahlschalter
+* Blinkersteuerung inklusive Warnblinkanlage
+* Türsteuerung inklusive Türfreigabe
+* Geldwechsel-Tasten
 
-* Solaris Urbino (aka Galaxis Urban) reports incorrect gear state to the telemetry endpoint. The gear can be changed,
-  but only the "N" button lights up
+### Bekannte Probleme
 
-### Installation and Update instructions
+* Der Solaris Urbino (auch bekannt als Galaxis Urban) meldet einen falschen Gangzustand an den Telemetrie-Endpunkt. Der Gang kann zwar gewechselt werden, aber nur die „N“-Taste leuchtet.
 
-1. Download the ZIP-File `de.thatzok.thebus.sdPlugin.zip` (you only need this one) from the latest release on
-   the [releases page](https://github.com/thatzok/TheBus-StreamDeck-Plugin/releases)
-2. Close the Stream Deck software (or the unpack/copy process will maybe fail)
-3. Copy the ZIP-File to the Stream Deck software plugins folder `%AppData%\Elgato\StreamDeck\Plugins`
-3. Unpack the ZIP-File
-4. Restart the Stream Deck software
-5. Configure the plugin in the Stream Deck software
-6. Enjoy!
+### Installations- und Update-Anweisungen
 
-### Acknowledgements
+1. Lade die ZIP-Datei `de.thatzok.thebus.sdPlugin.zip` (du benötigst nur diese) von der neuesten Version auf der [Releases-Seite](https://github.com/thatzok/TheBus-StreamDeck-Plugin/releases) herunter.
+2. Doppelklicke auf die heruntergeladene Datei.
+   Das Stream Deck wird fragen, ob du das Plugin installieren möchtest. Klicke auf Installieren.
 
-The property inspectors and some icons were taken from the TML plugin.
+### Einrichtung & Voraussetzungen
 
+1. The Bus: Stelle sicher, dass das Spiel läuft.
+2. Stream Deck Software: Version 6.6 oder höher ist erforderlich.
+3. Plugin-Konfiguration: Nach der Installation findest du in deiner Stream Deck Aktionsliste eine neue Kategorie namens „`The Bus`“. Ziehe eine beliebige Aktion (z. B. „Zündung“ oder „Türtaste“) auf eine Taste.
+4. Viel Spaß!
 
-## License
+### Danksagungen
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Die Property Inspector und einige Icons wurden vom offiziellen TML-Plugin übernommen.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [GNU General Public License](LICENSE) for more details.
+### Lizenz
 
-You should have received a copy of the GNU General Public License along with this program. If not, see <https://www.gnu.org/licenses/>.
+Dieses Programm ist freie Software: Sie können es unter den Bedingungen der GNU General Public License, wie von der Free Software Foundation veröffentlicht, entweder in Version 3 der Lizenz oder (nach Ihrer Wahl) jeder späteren Version, weitergeben und/oder modifizieren.
+
+Dieses Programm wird in der Hoffnung verbreitet, dass es nützlich sein wird, aber OHNE JEDE GEWÄHRLEISTUNG; sogar ohne die implizite Gewährleistung der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK. Siehe die [GNU General Public License](LICENSE) für weitere Details.
+
+Sie sollten eine Kopie der GNU General Public License zusammen mit diesem Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.

@@ -7,8 +7,8 @@
   "Icon": "Category",
   "Name": "The Bus",
   "URL": "https://github.com/thatzok/TheBus-StreamDeck-Plugin",
-  "Version": "1.3",
-  "Category": "The Bus Telemetry",
+  "Version": "1.4.0",
+  "Category": "The Bus",
   "CategoryIcon": "Category",
   "OS": [
     {
