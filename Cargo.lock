@@ -1333,9 +1333,9 @@ dependencies = [
 
 [[package]]
 name = "the-bus-telemetry"
-version = "5.3.0"
+version = "5.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "587d07451505cda506a402b5016939925da4d419733ba8c2215ab231dc53040b"
+checksum = "4876d6f74682fd8e363b94e66fd4c3ae64ba3881c3615824e4a6d125e8cf0873"
 dependencies = [
  "komsi",
  "reqwest",
@@ -1345,7 +1345,7 @@ dependencies = [
 
 [[package]]
 name = "thebus-streamdeck-plugin"
-version = "1.6.0"
+version = "1.6.1"
 dependencies = [
  "komsi",
  "rusty-patio",
