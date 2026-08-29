@@ -4,7 +4,7 @@
 
 Dieses Plugin nutzt die Telemetrie-Schnittstelle des TML-Studios-Spiels „The Bus“, um In-Game-Funktionen über das Stream Deck zu steuern und Informationen auf den Tasten anzuzeigen.
 
-### Die folgenden Funktionen sind verfügbar und wurden mit der Version 3.3 von The Bus getestet:
+### Die folgenden Funktionen sind verfügbar und wurden mit der Version 1.2 von The Bus getestet:
 
 * Statusanzeige: Spieler sitzt auf dem Fahrersitz
 * Feststellbremse

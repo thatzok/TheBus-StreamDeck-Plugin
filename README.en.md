@@ -5,7 +5,7 @@
 This plugin uses the telemetry interface of the TML Studios game "The Bus" to control in-game functions from the Stream
 Deck and display information on buttons.
 
-### The following features are available and have been tested with The Bus version 3.3:
+### The following features are available and have been tested with The Bus version 1.2:
 
 * Status display: Player is in the driver's seat
 * Parking brake
