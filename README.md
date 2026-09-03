@@ -17,8 +17,8 @@ Dieses Plugin nutzt die Telemetrie-Schnittstelle des TML-Studios-Spiels „The B
 
 ### Installations- und Update-Anweisungen
 
-1. Lade die ZIP-Datei `de.thatzok.thebus.sdPlugin.zip` (du benötigst nur diese) von der neuesten Version auf der [Releases-Seite](https://github.com/thatzok/TheBus-StreamDeck-Plugin/releases) herunter.
-2. Doppelklicke auf die heruntergeladene Datei.
+1. Lade die Datei `de.thatzok.thebus.sdPlugin` (du benötigst nur diese, das ist intern eine ZIP-Datei im Plugin-Format) von der neuesten Version auf der [Releases-Seite](https://github.com/thatzok/TheBus-StreamDeck-Plugin/releases) herunter.
+2. Entpacke die Datei nicht, sondern Doppelklicke auf diese heruntergeladene Datei (die Stream-Deck Software muss laufen)
    Das Stream Deck wird fragen, ob du das Plugin installieren möchtest. Klicke auf Installieren.
 
 ### Einrichtung & Voraussetzungen

@@ -19,10 +19,9 @@ Deck and display information on buttons.
 
 ### Installation and Update instructions
 
-1. Download the ZIP-File `de.thatzok.thebus.sdPlugin.zip` (you only need this one) from the latest release on
-   the [releases page](https://github.com/thatzok/TheBus-StreamDeck-Plugin/releases)
-2. Double-click the downloaded file.
-   Stream Deck will ask if you want to install the plugin. Click Install.
+1. Download the `de.thatzok.thebus.sdPlugin` file (you only need this one; internally, it is a ZIP file in the plugin format) from the latest release on the [Releases page](https://github.com/thatzok/TheBus-StreamDeck-Plugin/releases).
+2. Do not unzip the file; instead, double-click the downloaded file (ensure the Stream Deck software is running).
+   The Stream Deck will ask if you want to install the plugin. Click Install.
 
 ### Setup & Requirements
 
